@@ -87,6 +87,14 @@ class VXDHitPosition(Module):
 	def event(self):
 		geoCache = Belle2.VXD.GeoCache.getInstance()
 
+		mcpart = Belle2.PyStoreArray('MCParticles')
+
+		for part in mcpart:
+			mctraj = part.getRelationsTo('MCParticlesTrajectorys)
+			print(len(mctraj))
+
+		
+
 		pxd_clusters = Belle2.PyStoreArray('PXDClusters')
 
 		#print("event=", Belle2.PyStoreObj('EventMetaData').obj().getEvent())
@@ -109,7 +117,7 @@ class VXDHitPosition(Module):
 			true_parts = cluster.getRelationsTo('PXDTrueHits')
 			sim_parts0 = cluster.getRelationsTo('PXDSimHits')
 
-			print(len(digits))
+			#print(len(digits))
 
 			info = geoCache.get(vxd_id)
 			r_local = ROOT.TVector3(cluster.getU(), cluster.getV(), 0)
