@@ -87,52 +87,52 @@ class VXDHitPosition(Module):
 	def event(self):
 		geoCache = Belle2.VXD.GeoCache.getInstance()
 
-			pxd_clusters = Belle2.PyStoreArray('PXDClusters')
+		pxd_clusters = Belle2.PyStoreArray('PXDClusters')
 
-			#print("event=", Belle2.PyStoreObj('EventMetaData').obj().getEvent())
-			for cluster in pxd_clusters:
-				# Event identification
-				self.data.exp = Belle2.PyStoreObj('EventMetaData').obj().getExperiment()
-				self.data.run = Belle2.PyStoreObj('EventMetaData').obj().getRun()
-				self.data.evt = Belle2.PyStoreObj('EventMetaData').obj().getEvent()
+		#print("event=", Belle2.PyStoreObj('EventMetaData').obj().getEvent())
+		for cluster in pxd_clusters:
+			# Event identification
+			self.data.exp = Belle2.PyStoreObj('EventMetaData').obj().getExperiment()
+			self.data.run = Belle2.PyStoreObj('EventMetaData').obj().getRun()
+			self.data.evt = Belle2.PyStoreObj('EventMetaData').obj().getEvent()
 
-				# Sensor identification
-				vxd_id = cluster.getSensorID()
-				self.data.vxd_id = vxd_id.getID()
-				self.data.layer = vxd_id.getLayerNumber()
-				self.data.ladder = vxd_id.getLadderNumber()
-				self.data.sensor = vxd_id.getSensorNumber()
+			# Sensor identification
+			vxd_id = cluster.getSensorID()
+			self.data.vxd_id = vxd_id.getID()
+			self.data.layer = vxd_id.getLayerNumber()
+			self.data.ladder = vxd_id.getLadderNumber()
+			self.data.sensor = vxd_id.getSensorNumber()
 
-				#Find digits in cluster
-				digits = cluster.getRelationsTo('PXDDigits')
-				mc_part = cluster.getRelationsTo('MCParticles')
-				true_parts = cluster.getRelationsTo('PXDTrueHits')
-				sim_parts0 = cluster.getRelationsTo('PXDSimHits')
+			#Find digits in cluster
+			digits = cluster.getRelationsTo('PXDDigits')
+			mc_part = cluster.getRelationsTo('MCParticles')
+			true_parts = cluster.getRelationsTo('PXDTrueHits')
+			sim_parts0 = cluster.getRelationsTo('PXDSimHits')
 
-                print(len(digits))
+                	print(len(digits))
 
-				info = geoCache.get(vxd_id)
-				r_local = ROOT.TVector3(cluster.getU(), cluster.getV(), 0)
-				r_global = info.pointToGlobal(r_local)
+			info = geoCache.get(vxd_id)
+			r_local = ROOT.TVector3(cluster.getU(), cluster.getV(), 0)
+			r_global = info.pointToGlobal(r_local)
 
-				self.data.cls_u = r_local.X()
-				self.data.cls_v = r_local.Y()
-				self.data.cls_w = r_local.Z()
-				self.data.cls_x = r_global.X()
-				self.data.cls_y = r_global.Y()
-				self.data.cls_z = r_global.Z()
-
-
-				# Cluster size and charge
-				self.data.cls_uSize = cluster.getUSize()
-				self.data.cls_vSize = cluster.getVSize()
-				self.data.charge = cluster.getCharge()
-				self.data.seed_charge = cluster.getSeedCharge()
+			self.data.cls_u = r_local.X()
+			self.data.cls_v = r_local.Y()
+			self.data.cls_w = r_local.Z()
+			self.data.cls_x = r_global.X()
+			self.data.cls_y = r_global.Y()
+			self.data.cls_z = r_global.Z()
 
 
-				# Fill tree
-				self.file.cd()
-				self.tree.Fill()
+			# Cluster size and charge
+			self.data.cls_uSize = cluster.getUSize()
+			self.data.cls_vSize = cluster.getVSize()
+			self.data.charge = cluster.getCharge()
+			self.data.seed_charge = cluster.getSeedCharge()
+
+
+			# Fill tree
+			self.file.cd()
+			self.tree.Fill()
 
 	def terminate(self):
 		""" Close the output file."""
