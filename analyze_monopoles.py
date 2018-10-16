@@ -109,7 +109,7 @@ class VXDHitPosition(Module):
 			true_parts = cluster.getRelationsTo('PXDTrueHits')
 			sim_parts0 = cluster.getRelationsTo('PXDSimHits')
 
-                	print(len(digits))
+			print(len(digits))
 
 			info = geoCache.get(vxd_id)
 			r_local = ROOT.TVector3(cluster.getU(), cluster.getV(), 0)
