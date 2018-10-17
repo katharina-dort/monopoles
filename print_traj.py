@@ -51,7 +51,7 @@ gROOT.ProcessLine('struct EventDataSimHit {\
 
 from ROOT import EventDataSimHit
 
-
+ROOT.gROOT.SetBatch(False)
 
 class VXDHitPosition(Module):
 
@@ -90,8 +90,9 @@ class VXDHitPosition(Module):
 		mcpart = Belle2.PyStoreArray('MCParticles')
 
 		for part in mcpart:
-			mctraj = part.getRelationsTo('MCParticlesTrajectorys')
-			print(len(mctraj))
+			mctraj = part.getRelationsTo('MCParticleTrajectorys')
+			#if(len(mctraj) > 0):
+				#print(mc)
 
 		
 
@@ -99,11 +100,13 @@ class VXDHitPosition(Module):
 
 		#print("event=", Belle2.PyStoreObj('EventMetaData').obj().getEvent())
 		for cluster in pxd_clusters:
+			mcparticles = cluster.getRelationsTo('MCParticles')
+			#print(len(mcparticles))
 			# Event identification
 			self.data.exp = Belle2.PyStoreObj('EventMetaData').obj().getExperiment()
 			self.data.run = Belle2.PyStoreObj('EventMetaData').obj().getRun()
 			self.data.evt = Belle2.PyStoreObj('EventMetaData').obj().getEvent()
-
+	
 			# Sensor identification
 			vxd_id = cluster.getSensorID()
 			self.data.vxd_id = vxd_id.getID()
@@ -154,7 +157,21 @@ main.add_module('RootInput',inputFileName = '/home/belle2/kdort/simulations/mono
 # Load parameters
 main.add_module(register_module('Gearbox'))
 # Create geometry
-main.add_module(register_module('Geometry'))
+geometry =register_module('Geometry')
+geometry.param('excludedComponents', ['ECL'])
+main.add_module(geometry)
+display = register_module('Display')
+display.param('showMCInfo', True)
+display.param('assignHitsToPrimaries', False)
+display.param('showCharged', True)
+display.param('showNeutrals', True)
+display.param('showRecoTracks', False)
+display.param('showCDCHits', False)
+display.param('showTriggerObjects', False)
+display.param('showTrackLevelObjects', False)
+display.param('automatic', False)
+display.param('fullGeometry', False)
+main.add_module(display)
 main.add_module(VXDHitPosition())
 process(main)
 print(statistics)
